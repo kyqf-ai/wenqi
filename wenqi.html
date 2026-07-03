@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问期 · 婚期择吉考据</title>
+<script src="https://cdn.jsdmirror.com/npm/lunar-javascript@1.7.7/lunar.min.js">
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --paper:      #f1ead9;
+  --paper-2:    #e8dfc8;
+  --paper-3:    #d8caa9;
+  --paper-deep: #e0d4b8;
+  --ink:        #221d15;
+  --ink-soft:   #6b6149;
+  --ink-faint:  #9c907a;
+  --indigo:     #1f3047;
+  --indigo-2:   #2c4360;
+  --indigo-pale:#1f3047;
+  --vermillion: #a23b2e;
+  --vermillion-deep:#7c2c21;
+  --vermillion-pale: rgba(162,59,46,.09);
+  --warn:       #2b3a55;
+  --warn-pale:  rgba(43,58,85,.08);
+  --good:       var(--vermillion);
+  --neutral:    #8a8062;
+  --line:       #c9bb98;
+  --line-soft:  rgba(34,29,21,.1);
+  --shadow:     0 1px 2px rgba(34,29,21,.08);
+  --radius-sm:  2px;
+  --radius:     3px;
+  --serif: 'Noto Serif SC', '宋体', serif;
+  --mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+
+body{
+  font-family:var(--serif);
+  color:var(--ink);
+  background:var(--paper);
+  line-height:1.6;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(34,29,21,.018) 0px, rgba(34,29,21,.018) 1px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at 8% 0%, rgba(31,48,71,.05), transparent 45%),
+    radial-gradient(ellipse at 100% 18%, rgba(162,59,46,.05), transparent 40%);
+}
+
+::selection{background:var(--vermillion);color:var(--paper);}
+
+a{color:var(--indigo);}
+
+.page{max-width:920px;margin:0 auto;padding:0 1.1rem 5rem;}
+
+/* hero */
+.hero{
+  padding:3rem 0 2rem;
+  border-bottom:1px solid var(--line);
+  margin-bottom:2.2rem;
+  position:relative;
+}
+.hero-eyebrow{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.22em;
+  color:var(--ink-faint);
+  text-transform:uppercase;
+  margin-bottom:.9rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+.hero-eyebrow::before{
+  content:'';
+  width:22px;height:1px;background:var(--vermillion);
+  display:inline-block;
+}
+.hero-title{
+  font-size:2.5rem;
+  font-weight:900;
+  letter-spacing:.05em;
+  color:var(--indigo);
+  display:flex;
+  align-items:baseline;
+  gap:.5rem;
+}
+.hero-title .accent{color:var(--vermillion);}
+.hero-sub{
+  margin-top:.85rem;
+  font-size:.95rem;
+  color:var(--ink-soft);
+  max-width:46rem;
+}
+.hero-method{
+  margin-top:1.4rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem .5rem;
+}
+.method-chip{
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.03em;
+  color:var(--indigo);
+  background:rgba(31,48,71,.06);
+  border:1px solid rgba(31,48,71,.18);
+  padding:.3rem .6rem;
+  border-radius:var(--radius-sm);
+}
+.hero-disclaim{
+  margin-top:1.1rem;
+  font-size:.76rem;
+  color:var(--ink-faint);
+  border-left:2px solid var(--paper-3);
+  padding-left:.7rem;
+}
+
+/* panels */
+.panel{
+  background:var(--paper-2);
+  border:1px solid var(--line);
+  border-left:5px solid var(--indigo);
+  border-radius:var(--radius);
+  padding:1.7rem 1.8rem 1.9rem;
+  margin-bottom:1.6rem;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.panel[hidden]{display:none;}
+.panel-tag{
+  position:absolute;
+  top:-.7rem;
+  left:-5px;
+  background:var(--indigo);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.12em;
+  padding:.22rem .55rem;
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+}
+.panel-title{
+  font-size:1.05rem;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:.3rem;
+  letter-spacing:.04em;
+}
+.panel-desc{
+  font-size:.82rem;
+  color:var(--ink-soft);
+  margin-bottom:1.3rem;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.1rem 1.4rem;
+}
+.field{display:flex;flex-direction:column;gap:.35rem;}
+.field.full{grid-column:1 / -1;}
+.field label{
+  font-size:.75rem;
+  font-weight:600;
+  color:var(--indigo);
+  letter-spacing:.04em;
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+}
+.field label .who{
+  font-family:var(--mono);
+  font-size:.62rem;
+  background:var(--vermillion-pale);
+  color:var(--vermillion-deep);
+  padding:.08rem .4rem;
+  border-radius:1px;
+}
+.row-2{display:grid;grid-template-columns:1.3fr 1fr;gap:.6rem;}
+
+input[type=date], select, input[type=text]{
+  width:100%;
+  font-family:var(--mono);
+  font-size:.88rem;
+  padding:.55rem .65rem;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  color:var(--ink);
+}
+select{font-family:var(--serif);font-size:.85rem;}
+input:focus, select:focus{
+  outline:none;
+  border-color:var(--indigo);
+  box-shadow:0 0 0 3px rgba(31,48,71,.12);
+}
+
+details.adv{
+  margin-top:1.3rem;
+  border-top:1px dashed var(--line);
+  padding-top:.9rem;
+}
+details.adv summary{
+  cursor:pointer;
+  font-size:.8rem;
+  font-weight:600;
+  color:var(--indigo);
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  user-select:none;
+}
+details.adv summary::-webkit-details-marker{display:none;}
+details.adv summary::before{
+  content:'▸';
+  font-size:.7rem;
+  transition:transform .15s;
+  color:var(--vermillion);
+}
+details.adv[open] summary::before{transform:rotate(90deg);}
+.adv-body{
+  margin-top:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
+}
+.toggle-row{
+  display:flex;
+  align-items:flex-start;
+  gap:.65rem;
+  font-size:.8rem;
+  color:var(--ink-soft);
+}
+.toggle-row input[type=checkbox]{
+  margin-top:.2rem;
+  width:15px;height:15px;
+  accent-color:var(--vermillion);
+  flex-shrink:0;
+}
+.toggle-row .t-label{font-weight:600;color:var(--ink);}
+.elder-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.7rem .9rem;
+}
+
+.preset-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  margin-bottom:.9rem;
+}
+.preset-btn{
+  font-family:var(--mono);
+  font-size:.74rem;
+  padding:.4rem .8rem;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  color:var(--ink-soft);
+  transition:all .12s;
+}
+.preset-btn:hover{border-color:var(--indigo);}
+.preset-btn.active{
+  background:var(--indigo);
+  border-color:var(--indigo);
+  color:var(--paper);
+}
+.custom-range{
+  display:none;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem;
+  margin-bottom:.9rem;
+}
+.custom-range.show{display:grid;}
+.range-hint{font-size:.74rem;color:var(--ink-faint);margin-bottom:1rem;}
+
+.btn-primary{
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:1rem;
+  letter-spacing:.15em;
+  padding:.85rem 1.5rem;
+  background:var(--vermillion);
+  color:#fdf6e8;
+  border:none;
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  width:100%;
+  transition:background .15s, transform .08s;
+  box-shadow:0 2px 0 var(--vermillion-deep);
+}
+.btn-primary:hover{background:var(--vermillion-deep);}
+.btn-primary:active{transform:translateY(2px);box-shadow:none;}
+.btn-primary:disabled{background:var(--ink-faint);box-shadow:none;cursor:wait;}
+
+.btn-ghost{
+  font-family:var(--serif);
+  font-size:.78rem;
+  font-weight:600;
+  padding:.45rem .85rem;
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  color:var(--indigo);
+}
+.btn-ghost:hover{border-color:var(--indigo);background:rgba(31,48,71,.05);}
+
+/* context */
+.context-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.6rem;
+}
+.year-ctx-block{margin-bottom:1.1rem;}
+.year-ctx-block:last-child{margin-bottom:0;}
+.year-ctx-head{
+  font-family:var(--mono);
+  font-size:.78rem;
+  font-weight:700;
+  color:var(--indigo);
+  margin-bottom:.5rem;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+.no-spring-badge{
+  font-family:var(--serif);
+  font-size:.7rem;
+  font-weight:700;
+  color:var(--warn);
+  background:var(--warn-pale);
+  border:1px solid rgba(43,58,85,.3);
+  padding:.1rem .5rem;
+  border-radius:var(--radius-sm);
+}
+.ambiguity-note{
+  margin-top:1rem;
+  font-size:.78rem;
+  color:var(--warn);
+  background:var(--warn-pale);
+  border-left:2px solid var(--warn);
+  padding:.6rem .8rem;
+  border-radius:var(--radius-sm);
+  line-height:1.7;
+}
+.ctx-chip{
+  flex:1 1 150px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:.65rem .8rem;
+}
+.ctx-chip .ctx-label{
+  font-size:.66rem;
+  color:var(--ink-faint);
+  letter-spacing:.06em;
+  margin-bottom:.3rem;
+}
+.ctx-chip .ctx-val{
+  font-family:var(--mono);
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--ink);
+}
+.ctx-chip.flag{background:var(--warn-pale);border-color:rgba(43,58,85,.35);}
+.ctx-chip.flag .ctx-val{color:var(--warn);}
+.ctx-chip.flag-good{background:var(--vermillion-pale);border-color:rgba(162,59,46,.35);}
+.ctx-chip.flag-good .ctx-val{color:var(--vermillion);}
+.ctx-note{
+  margin-top:1rem;
+  font-size:.78rem;
+  color:var(--ink-soft);
+  background:rgba(31,48,71,.05);
+  border-left:2px solid var(--indigo);
+  padding:.6rem .8rem;
+}
+
+.tension-block{
+  margin-top:1.5rem;
+  padding-top:1.3rem;
+  border-top:1px dashed var(--line);
+}
+.tension-title{
+  font-size:.92rem;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:.5rem;
+}
+.tension-item{
+  font-size:.82rem;
+  padding:.5rem .7rem;
+  border-radius:var(--radius-sm);
+  margin-bottom:.5rem;
+  border:1px solid transparent;
+}
+.tension-item.tension{
+  background:var(--warn-pale);
+  border-color:rgba(43,58,85,.25);
+  color:var(--warn);
+}
+.tension-item.harmony{
+  background:var(--vermillion-pale);
+  border-color:rgba(162,59,46,.25);
+  color:var(--vermillion-deep);
+}
+.tension-empty{
+  font-size:.82rem;
+  color:var(--ink-soft);
+}
+
+/* results */
+.view-switch{
+  display:inline-flex;
+  border:1px solid var(--indigo);
+  border-radius:var(--radius-sm);
+  overflow:hidden;
+  margin-bottom:1rem;
+}
+.view-switch button{
+  font-family:var(--mono);
+  font-size:.76rem;
+  padding:.45rem .95rem;
+  background:var(--paper);
+  border:none;
+  cursor:pointer;
+  color:var(--indigo);
+  border-right:1px solid var(--indigo);
+}
+.view-switch button:last-child{border-right:none;}
+.view-switch button.active{background:var(--indigo);color:var(--paper);}
+
+.summary-line{
+  font-size:.8rem;
+  color:var(--ink-soft);
+  margin-bottom:1.1rem;
+}
+.summary-line b{color:var(--ink);font-family:var(--mono);}
+
+.legend-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem 1.3rem;
+  align-items:center;
+  font-size:.72rem;
+  color:var(--ink-soft);
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:.6rem .9rem;
+  margin-bottom:1.3rem;
+}
+.legend-dot{
+  width:9px;height:9px;
+  display:inline-block;
+  border-radius:1px;
+  margin-right:.35rem;
+  vertical-align:middle;
+}
+.legend-dot.good{background:var(--vermillion);}
+.legend-dot.warn{background:var(--warn);}
+.legend-dot.neutral{background:var(--neutral);}
+
+/* calendar */
+.calendar-wrap{display:flex;flex-direction:column;gap:1.6rem;}
+.month-block{}
+.month-title{
+  font-family:var(--mono);
+  font-size:.84rem;
+  font-weight:700;
+  color:var(--indigo);
+  margin-bottom:.55rem;
+  padding-bottom:.35rem;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+}
+.month-title .m-count{color:var(--ink-faint);font-weight:400;}
+.week-row{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:3px;
+  margin-bottom:3px;
+}
+.week-row span{
+  text-align:center;
+  font-size:.62rem;
+  color:var(--ink-faint);
+  font-family:var(--mono);
+}
+.day-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:3px;
+}
+.day-cell{
+  aspect-ratio:1;
+  border-radius:1px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--mono);
+  font-size:.72rem;
+  cursor:pointer;
+  position:relative;
+  border:1px solid transparent;
+  transition:transform .1s;
+  background:rgba(154,140,108,.12);
+  color:var(--ink-faint);
+}
+.day-cell.pad{visibility:hidden;cursor:default;}
+.day-cell.included{color:var(--ink);}
+.day-cell.excluded{
+  background:repeating-linear-gradient(135deg, rgba(34,29,21,.05) 0 3px, transparent 3px 7px);
+  color:var(--ink-faint);
+}
+.day-cell:hover{transform:scale(1.12);z-index:2;border-color:var(--indigo);}
+.day-cell:focus-visible{outline:2px solid var(--indigo);outline-offset:1px;}
+.day-cell.today{box-shadow:inset 0 0 0 1.5px var(--indigo);}
+.day-cell .dscore{font-size:.56rem;opacity:.85;}
+.day-cell.top1::after{
+  content:'';
+  position:absolute;top:-3px;right:-3px;
+  width:14px;height:14px;
+  background:var(--vermillion);
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+}
+
+/* list */
+.list-wrap{display:flex;flex-direction:column;gap:1rem;}
+.date-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:1.1rem 1.3rem;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.4rem 1rem;
+  position:relative;
+}
+.date-card.rank1{border-color:var(--vermillion);box-shadow:0 0 0 1px var(--vermillion);}
+.rank-num{
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:.85rem;
+  color:var(--paper);
+  background:var(--indigo);
+  width:1.7rem;height:1.7rem;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.rank1 .rank-num{background:var(--vermillion);}
+.dc-main{display:flex;flex-direction:column;gap:.15rem;min-width:9.5rem;}
+.dc-date{font-family:var(--mono);font-weight:700;font-size:1rem;color:var(--ink);}
+.dc-lunar{font-size:.74rem;color:var(--ink-soft);}
+.dc-score-wrap{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+}
+.dc-score{
+  font-family:var(--mono);
+  font-weight:900;
+  font-size:1.5rem;
+  color:var(--vermillion);
+  line-height:1;
+}
+.dc-tier{
+  font-size:.68rem;
+  color:var(--ink-soft);
+  background:var(--paper-2);
+  border:1px solid var(--line);
+  padding:.18rem .5rem;
+  border-radius:var(--radius-sm);
+}
+.dc-tags{
+  flex-basis:100%;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.35rem;
+  margin-top:.3rem;
+}
+.tag{
+  font-size:.68rem;
+  padding:.16rem .5rem;
+  border-radius:var(--radius-sm);
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.tag.good{background:var(--vermillion-pale);color:var(--vermillion-deep);border-color:rgba(162,59,46,.2);}
+.tag.warn{background:var(--warn-pale);color:var(--warn);border-color:rgba(43,58,85,.18);}
+.tag.neutral{background:rgba(138,128,98,.1);color:var(--neutral);}
+.dc-detail-btn{
+  flex-basis:100%;
+  margin-top:.5rem;
+  text-align:center;
+}
+
+.load-more-wrap{text-align:center;margin-top:.5rem;}
+
+.empty-state{
+  text-align:center;
+  padding:3rem 1rem;
+  color:var(--ink-soft);
+  font-size:.9rem;
+}
+
+/* drawer */
+.drawer-overlay{
+  position:fixed;inset:0;
+  background:rgba(34,29,21,.45);
+  opacity:0;pointer-events:none;
+  transition:opacity .2s;
+  z-index:40;
+}
+.drawer-overlay.show{opacity:1;pointer-events:auto;}
+.drawer{
+  position:fixed;
+  top:0;right:0;bottom:0;
+  width:min(440px, 92vw);
+  background:var(--paper-2);
+  border-left:1px solid var(--line);
+  box-shadow:-8px 0 26px rgba(34,29,21,.18);
+  transform:translateX(100%);
+  transition:transform .25s cubic-bezier(.3,.7,.4,1);
+  z-index:41;
+  overflow-y:auto;
+  padding:1.5rem 1.5rem 3rem;
+}
+.drawer.show{transform:translateX(0);}
+.drawer-close{
+  position:absolute;
+  top:1rem;right:1rem;
+  width:2rem;height:2rem;
+  border:1px solid var(--line);
+  background:var(--paper);
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  color:var(--ink-soft);
+  line-height:1;
+}
+.drawer-close:hover{border-color:var(--indigo);color:var(--indigo);}
+.drawer-head{margin-bottom:1.3rem;padding-right:2.2rem;}
+.drawer-date{font-family:var(--mono);font-weight:900;font-size:1.4rem;color:var(--ink);}
+.drawer-lunar{font-size:.82rem;color:var(--ink-soft);margin-top:.2rem;}
+.drawer-score-row{
+  display:flex;align-items:baseline;gap:.6rem;
+  margin-top:.6rem;
+}
+.drawer-score{font-family:var(--mono);font-weight:900;font-size:2.1rem;color:var(--vermillion);}
+.drawer-tier{font-size:.85rem;color:var(--ink-soft);}
+
+.seal{
+  position:absolute;top:.8rem;right:3rem;
+  width:46px;height:46px;
+}
+
+.layer-bars{display:flex;flex-direction:column;gap:.55rem;margin:1.1rem 0 1.3rem;}
+.layer-bar-row{display:flex;align-items:center;gap:.6rem;}
+.layer-bar-label{
+  width:4.2rem;flex-shrink:0;
+  font-size:.72rem;color:var(--ink-soft);
+}
+.layer-bar-track{
+  flex:1;height:7px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:4px;
+  overflow:hidden;
+}
+.layer-bar-fill{height:100%;background:var(--indigo);}
+.layer-bar-val{
+  width:3.6rem;flex-shrink:0;text-align:right;
+  font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);
+}
+
+.drawer-sec{margin-bottom:1.3rem;}
+.drawer-sec-title{
+  font-size:.75rem;font-weight:700;color:var(--indigo);
+  letter-spacing:.05em;
+  margin-bottom:.5rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.drawer-sec-title::before{content:'';width:14px;height:1px;background:var(--vermillion);}
+
+.yiji-row{font-size:.8rem;color:var(--ink-soft);margin-bottom:.3rem;}
+.yiji-row b{color:var(--ink);font-weight:700;}
+
+.interp-text{
+  font-size:.86rem;
+  line-height:1.85;
+  color:var(--ink);
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-left:2px solid var(--vermillion);
+  padding:.85rem .95rem;
+  border-radius:var(--radius-sm);
+}
+
+.elder-warn{font-size:.78rem;color:var(--warn);margin-top:.4rem;}
+
+.hour-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:4px;
+}
+.hour-cell{
+  font-family:var(--mono);
+  font-size:.64rem;
+  text-align:center;
+  padding:.4rem .15rem;
+  border-radius:2px;
+  border:1px solid var(--line);
+  background:var(--paper);
+  color:var(--ink-faint);
+  cursor:default;
+}
+.hour-cell.rec{background:var(--vermillion-pale);border-color:rgba(162,59,46,.3);color:var(--vermillion-deep);font-weight:700;}
+.hour-btn-wrap{margin-top:.3rem;}
+
+.site-footer{
+  margin-top:2.5rem;
+  padding-top:1.5rem;
+  border-top:1px solid var(--line);
+  font-size:.74rem;
+  color:var(--ink-faint);
+  line-height:1.9;
+}
+
+.loading-row{
+  display:flex;align-items:center;gap:.6rem;
+  padding:2.5rem 0;
+  color:var(--ink-soft);
+  font-size:.85rem;
+  justify-content:center;
+}
+.spinner{
+  width:16px;height:16px;
+  border:2px solid var(--line);
+  border-top-color:var(--vermillion);
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+}
+
+@media (max-width:680px){
+  .hero{padding:2.2rem 0 1.6rem;}
+  .hero-title{font-size:1.9rem;}
+  .form-grid{grid-template-columns:1fr;}
+  .elder-grid{grid-template-columns:1fr;}
+  .custom-range{grid-template-columns:1fr;}
+  .panel{padding:1.3rem 1.1rem 1.5rem;}
+  .drawer{width:100%;left:0;right:0;top:auto;bottom:0;height:88vh;
+    transform:translateY(100%);border-left:none;border-top:1px solid var(--line);
+    border-radius:10px 10px 0 0;}
+  .drawer.show{transform:translateY(0);}
+  .hour-grid{grid-template-columns:repeat(4,1fr);}
+  .dc-score-wrap{margin-left:0;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">通书 · 生肖 · 八字　三层互证</div>
+    <h1 class="hero-title">问<span class="accent">期</span></h1>
+    <p class="hero-sub">
+      一份把“算法”摊开给你看的婚期择吉工具。每一天的分数，都拆解为通书历法、生肖太岁、八字呼应三层依据，
+      逐项加减、来源可查——不给玄虚的结论，只给可推敲的过程。
+    </p>
+    <div class="hero-method">
+      <span class="method-chip">建除十二神</span>
+      <span class="method-chip">黄道黑道</span>
+      <span class="method-chip">二十八宿</span>
+      <span class="method-chip">阴阳不将</span>
+      <span class="method-chip">天赦 / 月德 / 天德</span>
+      <span class="method-chip">杨公忌 / 三娘煞</span>
+      <span class="method-chip">四绝四离</span>
+      <span class="method-chip">生肖冲煞 · 大利月</span>
+      <span class="method-chip">候选日柱 × 双方四柱</span>
+      <span class="method-chip">十神 / 合冲刑害</span>
+      <span class="method-chip">命局先天摩擦 · 通关化解</span>
+    </div>
+    <p class="hero-disclaim">本工具基于民俗历法资料编写，逻辑透明但流派不一、众说纷纭，结果仅供参考娱乐，不构成任何决策依据。</p>
+  </header>
+
+  <main>
+    <section class="panel panel-form">
+      <span class="panel-tag">一　命主信息</span>
+      <h2 class="panel-title">双方出生信息</h2>
+      <p class="panel-desc">用于排出双方四柱八字，作为“八字层”比对候选日期、以及化解双方命局先天摩擦的基准——本工具默认双方已决定缔结良缘，不做“是否相配”的合婚判断。时辰若不确定可选择“不详”，相应层级的比对会自动跳过。</p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label><span class="who">新娘</span>出生日期</label>
+          <input type="date" id="brideDate" value="1998-06-15">
+        </div>
+        <div class="field">
+          <label>出生时辰</label>
+          <select id="brideTime"></select>
+        </div>
+        <div class="field">
+          <label><span class="who">新郎</span>出生日期</label>
+          <input type="date" id="groomDate" value="1996-03-20">
+        </div>
+        <div class="field">
+          <label>出生时辰</label>
+          <select id="groomTime"></select>
+        </div>
+      </div>
+
+      <div id="birthAmbiguityNote" class="ambiguity-note" style="display:none;"></div>
+
+      <details class="adv">
+        <summary>高级设置：排除规则与从严程度</summary>
+        <div class="adv-body">
+          <label class="toggle-row">
+            <input type="checkbox" id="optStrictChong" checked>
+            <span><span class="t-label">日支正冲新人生肖时，直接排除</span><br>关闭后改为扣分处理，而非整日剔除。</span>
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="optStrictTaboo">
+            <span><span class="t-label">从严模式：杨公忌、三娘煞也作为硬性排除</span><br>默认仅重度扣分（不同典籍对其效力存疑），勾选后直接剔除当日。</span>
+          </label>
+          <label class="toggle-row">
+            <input type="checkbox" id="optFolkTaboos">
+            <span><span class="t-label">启用民俗附加扣分项</span><br>包括杨公忌、三娘煞、月忌日、鬼月、无春年、彭祖百忌（亥日）等争议性民俗，开启后会影响每日通书层评分（默认关闭，仅作为提示显示）。</span>
+          </label>
+          <div>
+            <label style="font-size:.78rem;font-weight:600;color:var(--ink);display:block;margin-bottom:.5rem;">
+              可选：双方长辈生肖（用于提示日支是否冲克尊长生肖，不计入评分，仅作信息提示）
+            </label>
+            <div class="elder-grid">
+              <div class="field"><label style="font-weight:400;">男方父亲</label><select class="elderSel" data-label="男方父亲"></select></div>
+              <div class="field"><label style="font-weight:400;">男方母亲</label><select class="elderSel" data-label="男方母亲"></select></div>
+              <div class="field"><label style="font-weight:400;">女方父亲</label><select class="elderSel" data-label="女方父亲"></select></div>
+              <div class="field"><label style="font-weight:400;">女方母亲</label><select class="elderSel" data-label="女方母亲"></select></div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel panel-form">
+      <span class="panel-tag">二　择期范围</span>
+      <h2 class="panel-title">在哪段时间里找</h2>
+      <div class="preset-group" id="presetGroup">
+        <button class="preset-btn" data-preset="3m">未来 3 个月</button>
+        <button class="preset-btn active" data-preset="12m">未来 12 个月</button>
+        <button class="preset-btn" data-preset="restYear">今年内剩余</button>
+        <button class="preset-btn" data-preset="nextYear">明年全年</button>
+        <button class="preset-btn" data-preset="custom">自定义</button>
+      </div>
+      <div class="custom-range" id="customRange">
+        <div class="field"><label>起始日期</label><input type="date" id="rangeStart"></div>
+        <div class="field"><label>结束日期</label><input type="date" id="rangeEnd"></div>
+      </div>
+      <p class="range-hint">自定义范围建议不超过 3 年，范围越大计算越慢。</p>
+      <button class="btn-primary" id="calcBtn">开始排查吉日</button>
+    </section>
+
+    <section class="panel" id="contextPanel" hidden>
+      <span class="panel-tag">三　年运背景</span>
+      <h2 class="panel-title">大背景：整段时间内不变的因素</h2>
+      <p class="panel-desc">这些指标不分日子、整年恒定，因此不计入“每日评分”的排序，只作为整体参考；若范围跨越多个公历年，按年份分别列出。</p>
+      <div id="contextGrid"></div>
+      <div class="ctx-note" id="contextNote"></div>
+
+      <div id="tensionBlock" class="tension-block">
+        <h3 class="tension-title">双方命局先天关系</h3>
+        <p class="panel-desc" style="margin-bottom:.8rem;">
+          下面列出的是双方四柱本身客观存在的生克合冲关系——这只是命理上的“既成事实”，不用来判断这段姻缘是否合适（既然已经在择日，说明这一步早已确定）。
+          若存在“先天摩擦”，下方逐日结果中标有“✦化解”的日子，是候选日期里特别能够从命理角度缓和这种摩擦的选择，可优先考虑。
+        </p>
+        <div id="tensionList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="resultPanel" hidden>
+      <span class="panel-tag">四　逐日评分结果</span>
+      <h2 class="panel-title">候选吉日</h2>
+      <p class="summary-line" id="summaryLine"></p>
+
+      <div class="legend-row">
+        <span><span class="legend-dot good"></span>吉利加分项</span>
+        <span><span class="legend-dot warn"></span>凶煞扣分项</span>
+        <span><span class="legend-dot neutral"></span>中性提示</span>
+        <span style="margin-left:auto;">总分 = 通书层(满40) + 生肖层(满25) + 八字层(满35)</span>
+      </div>
+
+      <div class="view-switch">
+        <button id="btnViewCalendar" class="active">月历视图</button>
+        <button id="btnViewList">榜单视图</button>
+      </div>
+
+      <div id="calendarView" class="calendar-wrap"></div>
+      <div id="listView" class="list-wrap" style="display:none;"></div>
+      <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+        <button class="btn-ghost" id="loadMoreBtn">显示更多</button>
+      </div>
+    </section>
+
+    <div class="loading-row" id="loadingRow" style="display:none;">
+      <span class="spinner"></span> 正在逐日推算通书、生肖、八字三层分数…
+    </div>
+
+    <footer class="site-footer">
+      问期 · 婚期择吉考据工具　|　历法计算基于 lunar-javascript 开源库。<br>
+      建除、黄道黑道、二十八宿、宜忌等取自通书惯例；杨公忌、三娘煞、大利月、红鸾天喜等取自民俗口诀，各地、各流派记载略有出入。<br>
+      本工具默认双方已决定缔结良缘，不做“是否相配”的合婚判断；八字层仅比较候选日柱与双方四柱、以及双方命局本身的呼应化解关系，并非完整命理论命，请勿替代专业咨询。择吉之事，心安为上。
+    </footer>
+  </main>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script>
+/**
+ * 婚期择吉 · 核心逻辑引擎 (v2)
+ * 新增：阴阳不将日、天赦日、月德/天德日、劫煞/灾煞等公认要素
+ * 民俗附加项（杨公忌、三娘煞等）改为可选扣分，默认关闭
+ */
+(function (global) {
+  'use strict';
+
+  var Solar = global.Solar;
+  var Lunar = global.Lunar;
+
+  // 基础常量
+  var GAN_LIST = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  var ZHI_LIST = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+  var WUXING_ORDER = ['木', '火', '土', '金', '水'];
+
+  var GAN_WUXING = { 甲: '木', 乙: '木', 丙: '火', 丁: '火', 戊: '土', 己: '土', 庚: '金', 辛: '金', 壬: '水', 癸: '水' };
+  var GAN_YINYANG = { 甲: 1, 乙: 0, 丙: 1, 丁: 0, 戊: 1, 己: 0, 庚: 1, 辛: 0, 壬: 1, 癸: 0 };
+  var ZHI_WUXING = { 子: '水', 丑: '土', 寅: '木', 卯: '木', 辰: '土', 巳: '火', 午: '火', 未: '土', 申: '金', 酉: '金', 戌: '土', 亥: '水' };
+
+  var GAN_WUHE = { 甲: '己', 己: '甲', 乙: '庚', 庚: '乙', 丙: '辛', 辛: '丙', 丁: '壬', 壬: '丁', 戊: '癸', 癸: '戊' };
+  var GAN_KE = { 甲: '戊', 乙: '己', 丙: '庚', 丁: '辛', 戊: '壬', 己: '癸', 庚: '甲', 辛: '乙', 壬: '丙', 癸: '丁' };
+  var GAN_CHONG = { 甲: '庚', 乙: '辛', 丙: '壬', 丁: '癸', 庚: '甲', 辛: '乙', 壬: '丙', 癸: '丁' };
+
+  var ZHI_CHONG = { 子: '午', 丑: '未', 寅: '申', 卯: '酉', 辰: '戌', 巳: '亥', 午: '子', 未: '丑', 申: '寅', 酉: '卯', 戌: '辰', 亥: '巳' };
+  var ZHI_LIUHE = { 子: '丑', 丑: '子', 寅: '亥', 亥: '寅', 卯: '戌', 戌: '卯', 辰: '酉', 酉: '辰', 巳: '申', 申: '巳', 午: '未', 未: '午' };
+  var ZHI_LIUHAI = { 子: '未', 未: '子', 丑: '午', 午: '丑', 寅: '巳', 巳: '寅', 卯: '辰', 辰: '卯', 申: '亥', 亥: '申', 酉: '戌', 戌: '酉' };
+  var ZHI_SANHE_GROUP = { 申: 'W', 子: 'W', 辰: 'W', 亥: 'M', 卯: 'M', 未: 'M', 寅: 'F', 午: 'F', 戌: 'F', 巳: 'J', 酉: 'J', 丑: 'J' };
+  var ZHI_XING_PAIRS = new Set([
+    '子卯', '卯子', '丑戌', '戌丑', '丑未', '未丑', '戌未', '未戌',
+    '寅巳', '巳寅', '寅申', '申寅', '巳申', '申巳', '辰辰', '午午', '酉酉', '亥亥'
+  ]);
+
+  var SX_CHONG = { 鼠: '马', 马: '鼠', 牛: '羊', 羊: '牛', 虎: '猴', 猴: '虎', 兔: '鸡', 鸡: '兔', 龙: '狗', 狗: '龙', 蛇: '猪', 猪: '蛇' };
+  var ZHI_TO_SX = { 子: '鼠', 丑: '牛', 寅: '虎', 卯: '兔', 辰: '龙', 巳: '蛇', 午: '马', 未: '羊', 申: '猴', 酉: '鸡', 戌: '狗', 亥: '猪' };
+  var SX_TO_ZHI = { 鼠: '子', 牛: '丑', 虎: '寅', 兔: '卯', 龙: '辰', 蛇: '巳', 马: '午', 羊: '未', 猴: '申', 鸡: '酉', 狗: '戌', 猪: '亥' };
+
+  var DA_LI_MONTHS = {
+    鼠: [6, 12], 马: [6, 12], 牛: [5, 11], 羊: [5, 11], 虎: [2, 8], 猴: [2, 8],
+    兔: [1, 7], 鸡: [1, 7], 龙: [4, 10], 狗: [4, 10], 蛇: [3, 9], 猪: [3, 9]
+  };
+
+  var HONGLUAN_BY_ZHI = { 子: '卯', 丑: '寅', 寅: '丑', 卯: '子', 辰: '亥', 巳: '戌', 午: '酉', 未: '申', 申: '未', 酉: '午', 戌: '巳', 亥: '辰' };
+  var TIANXI_BY_ZHI = { 子: '酉', 丑: '申', 寅: '未', 卯: '午', 辰: '巳', 巳: '辰', 午: '卯', 未: '寅', 申: '丑', 酉: '子', 戌: '亥', 亥: '戌' };
+
+  var YANG_GONG = new Set(['1-13','2-11','3-9','4-7','5-5','6-3','7-1','7-29','8-27','9-25','10-23','11-21','12-19']);
+  var SAN_NIANG = new Set([3,7,13,18,22,27]);
+  var MONTH_JI_DAYS = new Set([5,14,23]);
+  var SI_JUE_JQ = new Set(['立春','立夏','立秋','立冬']);
+  var SI_LI_JQ = new Set(['春分','秋分','夏至','冬至']);
+  var WED_YI_KEYWORDS = ['嫁娶','纳采','订盟','合帐','裁衣','冠笄','安床'];
+  var WED_JI_KEYWORDS = ['嫁娶'];
+
+  var WEEKDAY_CN = ['日','一','二','三','四','五','六'];
+  var TIME_ZHI_NAME = ['子时(23-1点)','丑时(1-3点)','寅时(3-5点)','卯时(5-7点)','辰时(7-9点)','巳时(9-11点)','午时(11-13点)','未时(13-15点)','申时(15-17点)','酉时(17-19点)','戌时(19-21点)','亥时(21-23点)'];
+
+  var TIANGOD_GOOD = new Set(['正官','正印','食神','正财']);
+  var TIANGOD_BAD = new Set(['七杀','伤官']);
+
+  // ── 新增吉神规则 ──
+  // 天赦日：春戊寅、夏甲午、秋戊申、冬甲子（季节按节气：立春~立夏为春）
+  var TIAN_SHE_GANZHI = new Set(['戊寅','甲午','戊申','甲子']);
+
+  // 月德：寅午戌月见丙，亥卯未月见甲，申子辰月见壬，巳酉丑月见庚
+  var YUE_DE_MAP = {
+    '寅':'丙','午':'丙','戌':'丙',
+    '亥':'甲','卯':'甲','未':'甲',
+    '申':'壬','子':'壬','辰':'壬',
+    '巳':'庚','酉':'庚','丑':'庚'
+  };
+  // 天德：正月丁、二月申、三月壬、四月辛、五月亥、六月甲、七月癸、八月寅、九月丙、十月乙、十一月巳、十二月庚
+  var TIAN_DE_MAP = {
+    1:'丁',2:'申',3:'壬',4:'辛',5:'亥',6:'甲',
+    7:'癸',8:'寅',9:'丙',10:'乙',11:'巳',12:'庚'
+  };
+
+  // 劫煞/灾煞（简易规则：按日支三合局查）
+  // 劫煞：申子辰日见巳、亥卯未日见申、寅午戌日见亥、巳酉丑日见寅
+  // 灾煞：申子辰日见午、亥卯未日见酉、寅午戌日见子、巳酉丑日见卯
+  var JIE_SHA_MAP = { '申':'巳','子':'巳','辰':'巳', '亥':'申','卯':'申','未':'申', '寅':'亥','午':'亥','戌':'亥', '巳':'寅','酉':'寅','丑':'寅' };
+  var ZAI_SHA_MAP = { '申':'午','子':'午','辰':'午', '亥':'酉','卯':'酉','未':'酉', '寅':'子','午':'子','戌':'子', '巳':'卯','酉':'卯','丑':'卯' };
+
+  // 阴阳不将日（按月建和日干支关系，逐月计算，因规则复杂，使用口诀表实现）
+  function isYinYangBuJiang(monthZhi, dayGanZhi) {
+    var table = {
+      寅: ['丙寅','丁卯','戊辰','己巳','庚午','辛未','壬申','癸酉','甲戌','乙亥'],
+      卯: ['戊辰','己巳','庚午','辛未','壬申','癸酉','甲戌','乙亥','丙子','丁丑'],
+      辰: ['庚午','辛未','壬申','癸酉','甲戌','乙亥','丙子','丁丑','戊寅','己卯'],
+      巳: ['壬申','癸酉','甲戌','乙亥','丙子','丁丑','戊寅','己卯','庚辰','辛巳'],
+      午: ['甲戌','乙亥','丙子','丁丑','戊寅','己卯','庚辰','辛巳','壬午','癸未'],
+      未: ['丙子','丁丑','戊寅','己卯','庚辰','辛巳','壬午','癸未','甲申','乙酉'],
+      申: ['戊寅','己卯','庚辰','辛巳','壬午','癸未','甲申','乙酉','丙戌','丁亥'],
+      酉: ['庚辰','辛巳','壬午','癸未','甲申','乙酉','丙戌','丁亥','戊子','己丑'],
+      戌: ['壬午','癸未','甲申','乙酉','丙戌','丁亥','戊子','己丑','庚寅','辛卯'],
+      亥: ['甲申','乙酉','丙戌','丁亥','戊子','己丑','庚寅','辛卯','壬辰','癸巳'],
+      子: ['丙戌','丁亥','戊子','己丑','庚寅','辛卯','壬辰','癸巳','甲午','乙未'],
+      丑: ['戊子','己丑','庚寅','辛卯','壬辰','癸巳','甲午','乙未','丙申','丁酉']
+    };
+    return table[monthZhi] ? table[monthZhi].indexOf(dayGanZhi) !== -1 : false;
+  }
+
+  function ganOf(gz) { return gz ? gz.charAt(0) : ''; }
+  function zhiOf(gz) { return gz && gz.length > 1 ? gz.charAt(1) : ''; }
+
+  function tenGod(dayGan, otherGan) {
+    if (!dayGan || !otherGan) return '';
+    if (dayGan === otherGan) return '比肩';
+    var di = WUXING_ORDER.indexOf(GAN_WUXING[dayGan]);
+    var oi = WUXING_ORDER.indexOf(GAN_WUXING[otherGan]);
+    var sameYY = GAN_YINYANG[dayGan] === GAN_YINYANG[otherGan];
+    if (di === oi) return sameYY ? '比肩' : '劫财';
+    if (oi === (di + 1) % 5) return sameYY ? '食神' : '伤官';
+    if (oi === (di + 4) % 5) return sameYY ? '偏印' : '正印';
+    if (oi === (di + 2) % 5) return sameYY ? '偏财' : '正财';
+    if (oi === (di + 3) % 5) return sameYY ? '七杀' : '正官';
+    return '';
+  }
+
+  var _noSpringCache = {};
+  function isNoSpringLunarYear(lunarYear) {
+    if (lunarYear in _noSpringCache) return _noSpringCache[lunarYear];
+    var found = false;
+    for (var solarYear = lunarYear; solarYear <= lunarYear + 1 && !found; solarYear++) {
+      for (var d = 1; d <= 8 && !found; d++) {
+        try {
+          var l = Solar.fromYmd(solarYear, 2, d).getLunar();
+          if (l.getYear() === lunarYear && l.getJieQi() === '立春') found = true;
+        } catch (e) {}
+      }
+    }
+    _noSpringCache[lunarYear] = !found;
+    return !found;
+  }
+
+  function getBaziFromBirth(ymd, timeIdx) {
+    var parts = ymd.split('-').map(Number);
+    var y = parts[0], m = parts[1], d = parts[2];
+    var timeUnknown = (timeIdx === -1 || timeIdx === undefined || timeIdx === null || isNaN(timeIdx));
+    var hour = timeUnknown ? 12 : (timeIdx === 0 ? 0 : timeIdx * 2 - 1);
+    var solar = Solar.fromYmdHms(y, m, d, hour, 0, 0);
+    var lunar = solar.getLunar();
+    var yearAmbiguous = lunar.getYearInGanZhiByLiChun() !== lunar.getYearInGanZhi();
+    return {
+      year: lunar.getYearInGanZhiByLiChun(),
+      month: lunar.getMonthInGanZhi(),
+      day: lunar.getDayInGanZhi(),
+      time: timeUnknown ? '' : lunar.getTimeInGanZhi(),
+      yearGan: lunar.getYearGanByLiChun(), yearZhi: lunar.getYearZhiByLiChun(),
+      monthGan: lunar.getMonthGan(), monthZhi: lunar.getMonthZhi(),
+      dayGan: lunar.getDayGan(), dayZhi: lunar.getDayZhi(),
+      timeGan: timeUnknown ? '' : lunar.getTimeGan(),
+      timeZhi: timeUnknown ? '' : lunar.getTimeZhi(),
+      timeUnknown: timeUnknown,
+      yearAmbiguous: yearAmbiguous,
+      yearSX: lunar.getYearShengXiaoByLiChun(),
+      lunarBirth: lunar.getYearInChinese() + '年' + lunar.getMonthInChinese() + '月' + lunar.getDayInChinese(),
+      solarBirth: solar.toYmd()
+    };
+  }
+
+  function getYearLiuNian(solarYear) {
+    var lunar = Solar.fromYmd(solarYear, 7, 1).getLunar();
+    return {
+      ganzhi: lunar.getYearInGanZhiByLiChun(),
+      gan: lunar.getYearGanByLiChun(),
+      zhi: lunar.getYearZhiByLiChun(),
+      sx: lunar.getYearShengXiaoByLiChun()
+    };
+  }
+
+  function checkNoSpringYear(solarYear) {
+    var midLunarYear = Solar.fromYmd(solarYear, 7, 1).getLunar().getYear();
+    return isNoSpringLunarYear(midLunarYear);
+  }
+
+  function getAllYearContexts(startSolarYear, endSolarYear, brideBazi, groomBazi, noSpringSet) {
+    var ctxs = [];
+    for (var sy = startSolarYear; sy <= endSolarYear; sy++) {
+      var liuNian = getYearLiuNian(sy);
+      var midLunarYear = Solar.fromYmd(sy, 7, 1).getLunar().getYear();
+      var isNoSp = noSpringSet ? !!noSpringSet[midLunarYear] : isNoSpringLunarYear(midLunarYear);
+      ctxs.push({
+        solarYear: sy,
+        liuNian: liuNian,
+        isNoSpring: isNoSp,
+        noSpringLunarYearDisplay: isNoSp ? (liuNian.ganzhi + '年（农历' + midLunarYear + '）') : '',
+        bride: {
+          benMing: liuNian.sx === brideBazi.yearSX,
+          chongTaiSui: SX_CHONG[brideBazi.yearSX] === liuNian.sx,
+          hongLuan: HONGLUAN_BY_ZHI[brideBazi.yearZhi] === liuNian.zhi,
+          tianXi: TIANXI_BY_ZHI[brideBazi.yearZhi] === liuNian.zhi,
+          daLiMonths: DA_LI_MONTHS[brideBazi.yearSX] || []
+        },
+        groom: {
+          benMing: liuNian.sx === groomBazi.yearSX,
+          chongTaiSui: SX_CHONG[groomBazi.yearSX] === liuNian.sx,
+          hongLuan: HONGLUAN_BY_ZHI[groomBazi.yearZhi] === liuNian.zhi,
+          tianXi: TIANXI_BY_ZHI[groomBazi.yearZhi] === liuNian.zhi
+        }
+      });
+    }
+    return ctxs;
+  }
+
+  function checkElderZodiacWarnings(lunar, elderSXList) {
+    var warnings = [];
+    var daySX = lunar.getDayShengXiao ? lunar.getDayShengXiao() : '';
+    if (!daySX || !elderSXList || !elderSXList.length) return warnings;
+    elderSXList.forEach(function (item) {
+      if (!item || !item.sx) return;
+      if (SX_CHONG[daySX] === item.sx) {
+        warnings.push('日支冲' + item.label + '生肖（' + daySX + '冲' + item.sx + '），部分地方习俗有讲究');
+      }
+    });
+    return warnings;
+  }
+
+  function getBaziDisplayPillars(person) {
+    var keys = ['year', 'month', 'day', 'time'];
+    var labels = { year: '年柱', month: '月柱', day: '日柱', time: '时柱' };
+    return keys.map(function (k) {
+      var gan = person[k + 'Gan'], zhi = person[k + 'Zhi'];
+      if (!gan || !zhi) return { label: labels[k], ganzhi: '时辰不详', wxGan: '', wxZhi: '', shiShen: k === 'day' ? '日主' : '' };
+      return {
+        label: labels[k],
+        ganzhi: gan + zhi,
+        wxGan: GAN_WUXING[gan],
+        wxZhi: ZHI_WUXING[zhi],
+        shiShen: k === 'day' ? '日主' : tenGod(person.dayGan, gan)
+      };
+    });
+  }
+
+  // 硬性排除
+  function checkHardExclude(lunar, brideBazi, groomBazi, settings) {
+    settings = settings || {};
+    var reasons = [];
+    var zx = lunar.getZhiXing ? lunar.getZhiXing() : '';
+    if (zx === '破' || zx === '闭') {
+      reasons.push('建除值"' + zx + '"日，传统大凶，不宜行嫁娶之事');
+    }
+    var jiArr = (lunar.getDayJi ? lunar.getDayJi() : []) || [];
+    if (jiArr.some(function (s) { return WED_JI_KEYWORDS.indexOf(s) !== -1; })) {
+      reasons.push('通书当日明载"忌嫁娶/结婚"');
+    }
+    if (settings.strictChong !== false) {
+      var daySX = lunar.getDayShengXiao ? lunar.getDayShengXiao() : '';
+      if (daySX) {
+        if (SX_CHONG[daySX] === brideBazi.yearSX) reasons.push('日支正冲新娘生肖（' + daySX + '冲' + brideBazi.yearSX + '）');
+        if (SX_CHONG[daySX] === groomBazi.yearSX) reasons.push('日支正冲新郎生肖（' + daySX + '冲' + groomBazi.yearSX + '）');
+      }
+    }
+    if (settings.strictTaboo) {
+      var lunarMonth = Math.abs(lunar.getMonth());
+      var lunarDay = lunar.getDay();
+      var yangKey = lunarMonth + '-' + lunarDay;
+      if (YANG_GONG.has(yangKey)) reasons.push('杨公忌日（从严模式下作为硬性排除）');
+      if (SAN_NIANG.has(lunarDay)) reasons.push('三娘煞日（从严模式下作为硬性排除）');
+    }
+    return reasons;
+  }
+
+  var ZHIXING_SCORE = { 成:10, 开:8, 执:6, 定:4, 满:2, 平:1, 除:1, 危:-3, 收:-1, 建:-6 };
+
+  function scoreAlmanacLayer(solar, lunar, noSpringSet, settings) {
+    var items = [];
+    var score = 20;
+    function add(label, delta, kind) { score += delta; items.push({ label: label, delta: delta, kind: kind }); }
+
+    var zx = lunar.getZhiXing ? lunar.getZhiXing() : '';
+    if (zx && ZHIXING_SCORE[zx] !== undefined) {
+      var zd = ZHIXING_SCORE[zx];
+      add('建除·' + zx + '日', zd, zd > 0 ? 'good' : (zd < 0 ? 'warn' : 'neutral'));
+    }
+
+    var tsLuck = lunar.getDayTianShenLuck ? lunar.getDayTianShenLuck() : '';
+    var tsName = lunar.getDayTianShen ? lunar.getDayTianShen() : '';
+    if (tsLuck === '吉') add('黄道·' + tsName, 6, 'good');
+    else if (tsLuck === '凶') add('黑道·' + tsName, -6, 'warn');
+
+    var xiuLuck = lunar.getXiuLuck ? lunar.getXiuLuck() : '';
+    var xiuName = lunar.getXiu ? lunar.getXiu() : '';
+    if (xiuLuck === '吉') add('星宿·' + xiuName + '（吉）', 6, 'good');
+    else if (xiuLuck === '凶') add('星宿·' + xiuName + '（凶）', -6, 'warn');
+    else if (xiuName) add('星宿·' + xiuName, 0, 'neutral');
+
+    var yiArr = (lunar.getDayYi ? lunar.getDayYi() : []) || [];
+    if (yiArr.some(function (s) { return WED_YI_KEYWORDS.indexOf(s) !== -1; })) add('通书宜嫁娶', 8, 'good');
+
+    // 新增：公认吉神
+    var dayGanZhi = lunar.getDayInGanZhi();
+    if (TIAN_SHE_GANZHI.has(dayGanZhi)) add('天赦日', 10, 'good');
+    var monthZhi = lunar.getMonthZhi ? lunar.getMonthZhi() : zhiOf(lunar.getMonthInGanZhi());
+    if (isYinYangBuJiang(monthZhi, dayGanZhi)) add('阴阳不将日', 12, 'good');
+
+    var dayGan = ganOf(dayGanZhi);
+    if (YUE_DE_MAP[monthZhi] === dayGan) add('月德日', 6, 'good');
+    var lunarMonthNum = Math.abs(lunar.getMonth());
+    if (TIAN_DE_MAP[lunarMonthNum] === dayGanZhi.charAt(0) || TIAN_DE_MAP[lunarMonthNum] === dayGanZhi.charAt(1)) add('天德日', 6, 'good');
+
+    // 劫煞灾煞
+    var dayZhi = zhiOf(dayGanZhi);
+    if (JIE_SHA_MAP[dayZhi] === dayZhi) add('日值劫煞', -5, 'warn');
+    if (ZAI_SHA_MAP[dayZhi] === dayZhi) add('日值灾煞', -5, 'warn');
+
+    // 民俗附加项（仅当设置启用时才扣分，否则仅作为提示）
+    var lunarMonth = Math.abs(lunar.getMonth());
+    var lunarDay = lunar.getDay();
+    var isLeap = lunar.getMonth() < 0;
+    var yangKey = lunarMonth + '-' + lunarDay;
+
+    var folkEnabled = settings && settings.enableFolkTaboos;
+
+    if (YANG_GONG.has(yangKey)) {
+      if (folkEnabled) add('杨公忌日', -18, 'warn');
+      else items.push({ label: '民俗提示：杨公忌日（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+    if (SAN_NIANG.has(lunarDay)) {
+      if (folkEnabled) add('三娘煞日', -12, 'warn');
+      else items.push({ label: '民俗提示：三娘煞日（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+    if (MONTH_JI_DAYS.has(lunarDay)) {
+      if (folkEnabled) add('月忌日（初五/十四/廿三）', -10, 'warn');
+      else items.push({ label: '民俗提示：月忌日（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+    if (lunarMonth === 7) {
+      if (folkEnabled) add('农历七月（俗称鬼月）', -6, 'warn');
+      else items.push({ label: '民俗提示：农历七月（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+    if (isLeap) items.push({ label: '闰' + lunar.getMonthInChinese() + '月（部分地方习俗有讲究，吉凶不一）', delta: 0, kind: 'neutral' });
+
+    var lunarYear = lunar.getYear ? lunar.getYear() : 0;
+    if (lunarYear && noSpringSet && noSpringSet[lunarYear]) {
+      if (folkEnabled) add('无春年（寡妇年）·农历' + lunarYear + '年无立春', -8, 'warn');
+      else items.push({ label: '民俗提示：无春年（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+
+    if (dayZhi === '亥') {
+      if (folkEnabled) add('彭祖百忌·亥日不嫁娶', -5, 'warn');
+      else items.push({ label: '民俗提示：彭祖百忌·亥日不嫁娶（未启用扣分）', delta: 0, kind: 'neutral' });
+    }
+
+    try {
+      var tmrJQ = solar.next(1).getLunar().getJieQi ? solar.next(1).getLunar().getJieQi() : '';
+      if (SI_JUE_JQ.has(tmrJQ)) add('四绝日（次日交' + tmrJQ + '）', -8, 'warn');
+      else if (SI_LI_JQ.has(tmrJQ)) add('四离日（次日交' + tmrJQ + '）', -5, 'warn');
+    } catch (e) {}
+
+    return { score: clip(score, 0, 40), max: 40, items: items };
+  }
+
+  function scoreZodiacLayer(lunar, brideBazi, groomBazi, settings) {
+    var items = [];
+    var score = 12;
+    function add(label, delta, kind) { score += delta; items.push({ label: label, delta: delta, kind: kind }); }
+    var daySX = lunar.getDayShengXiao ? lunar.getDayShengXiao() : '';
+    var dayZhi = lunar.getDayZhi ? lunar.getDayZhi() : zhiOf(lunar.getDayInGanZhi());
+
+    if (daySX && settings.strictChong === false) {
+      if (SX_CHONG[daySX] === brideBazi.yearSX) add('日支冲新娘生肖（' + daySX + '冲' + brideBazi.yearSX + '）', -12, 'warn');
+      if (SX_CHONG[daySX] === groomBazi.yearSX) add('日支冲新郎生肖（' + daySX + '冲' + groomBazi.yearSX + '）', -12, 'warn');
+    }
+    var brideYearZhi = brideBazi.yearZhi, groomYearZhi = groomBazi.yearZhi;
+    if (ZHI_LIUHAI[dayZhi] === brideYearZhi) add('日支害新娘生肖', -5, 'warn');
+    if (ZHI_LIUHAI[dayZhi] === groomYearZhi) add('日支害新郎生肖', -5, 'warn');
+    if (ZHI_XING_PAIRS.has(dayZhi + brideYearZhi)) add('日支刑新娘生肖', -4, 'warn');
+    if (ZHI_XING_PAIRS.has(dayZhi + groomYearZhi)) add('日支刑新郎生肖', -4, 'warn');
+
+    var lunarMonth = Math.abs(lunar.getMonth());
+    var daLi = DA_LI_MONTHS[brideBazi.yearSX] || [];
+    if (daLi.indexOf(lunarMonth) !== -1) add('女命大利月', 10, 'good');
+
+    return { score: clip(score, 0, 25), max: 25, items: items };
+  }
+
+  var PILLAR_WEIGHT = { year: 0.6, month: 0.9, day: 1.5, time: 0.5 };
+  var PILLAR_LABEL = { year: '年柱', month: '月柱', day: '日柱（夫妻宫）', time: '时柱' };
+
+  function scorePersonBaziRelation(dayGan, dayZhi, person, personLabel) {
+    var items = [];
+    var subtotal = 0;
+    var pillars = ['year', 'month', 'day', 'time'];
+    pillars.forEach(function (key) {
+      var pGan = person[key + 'Gan'], pZhi = person[key + 'Zhi'];
+      if (!pGan || !pZhi) return;
+      var w = PILLAR_WEIGHT[key];
+      var label = personLabel + PILLAR_LABEL[key];
+
+      if (ZHI_CHONG[dayZhi] === pZhi) {
+        var d = round1(-10 * w); subtotal += d;
+        items.push({ label: label + '支相冲（' + dayZhi + '冲' + pZhi + '）', delta: d, kind: 'warn' });
+      }
+      if (ZHI_LIUHAI[dayZhi] === pZhi) {
+        var d2 = round1(-5 * w); subtotal += d2;
+        items.push({ label: label + '支相害（' + dayZhi + '害' + pZhi + '）', delta: d2, kind: 'warn' });
+      }
+      if (ZHI_XING_PAIRS.has(dayZhi + pZhi)) {
+        var d3 = round1(-4 * w); subtotal += d3;
+        items.push({ label: label + '支相刑（' + dayZhi + '刑' + pZhi + '）', delta: d3, kind: 'warn' });
+      }
+      if (GAN_KE[dayGan] === pGan) {
+        var d4 = round1(-5 * w); subtotal += d4;
+        items.push({ label: label + '干相克（' + dayGan + '克' + pGan + '）', delta: d4, kind: 'warn' });
+      }
+      if (GAN_KE[pGan] === dayGan) {
+        var dRev = round1(-6 * w); subtotal += dRev;
+        items.push({ label: label + '干被克（' + pGan + '克' + dayGan + '）', delta: dRev, kind: 'warn' });
+      }
+      if (GAN_CHONG[dayGan] === pGan) {
+        var d5 = round1(-4 * w); subtotal += d5;
+        items.push({ label: label + '干相冲（' + dayGan + '冲' + pGan + '）', delta: d5, kind: 'warn' });
+      }
+      var tg = tenGod(pGan, dayGan);
+      if (TIANGOD_GOOD.has(tg)) {
+        var d6 = round1(3 * w); subtotal += d6;
+        items.push({ label: label + '见候选日干为「' + tg + '」', delta: d6, kind: 'good' });
+      } else if (TIANGOD_BAD.has(tg)) {
+        var d7 = round1(-2.5 * w); subtotal += d7;
+        items.push({ label: label + '见候选日干为「' + tg + '」，宜留意', delta: d7, kind: 'warn' });
+      }
+    });
+
+    if (GAN_WUHE[dayGan] === person.dayGan) {
+      subtotal += 8;
+      items.push({ label: personLabel + '日柱天干与候选日干相合（' + dayGan + '合' + person.dayGan + '）✦夫妻宫相合', delta: 8, kind: 'good' });
+    }
+    if (ZHI_LIUHE[dayZhi] === person.dayZhi) {
+      subtotal += 6;
+      items.push({ label: personLabel + '日柱地支与候选日支六合（' + dayZhi + '合' + person.dayZhi + '）✦夫妻宫相合', delta: 6, kind: 'good' });
+    } else if (ZHI_SANHE_GROUP[dayZhi] && ZHI_SANHE_GROUP[dayZhi] === ZHI_SANHE_GROUP[person.dayZhi] && dayZhi !== person.dayZhi) {
+      subtotal += 4;
+      items.push({ label: personLabel + '日柱地支与候选日支三合（' + dayZhi + '合' + person.dayZhi + '）✦夫妻宫相合', delta: 4, kind: 'good' });
+    }
+
+    return { subtotal: subtotal, items: items };
+  }
+
+  function getCoupleTension(brideBazi, groomBazi) {
+    var items = [];
+    var mitigationTargets = [];
+    var bYearZhi = brideBazi.yearZhi, gYearZhi = groomBazi.yearZhi;
+    if (ZHI_CHONG[bYearZhi] === gYearZhi) {
+      items.push({ label: '双方生肖相冲（' + brideBazi.yearSX + '冲' + groomBazi.yearSX + '）', kind: 'tension' });
+      mitigationTargets.push({ zhi: bYearZhi }, { zhi: gYearZhi });
+    } else if (ZHI_LIUHAI[bYearZhi] === gYearZhi) {
+      items.push({ label: '双方生肖相害（' + brideBazi.yearSX + '害' + groomBazi.yearSX + '）', kind: 'tension' });
+      mitigationTargets.push({ zhi: bYearZhi }, { zhi: gYearZhi });
+    }
+    var bZhi = brideBazi.dayZhi, gZhi = groomBazi.dayZhi;
+    var bGan = brideBazi.dayGan, gGan = groomBazi.dayGan;
+    if (ZHI_CHONG[bZhi] === gZhi) {
+      items.push({ label: '双方日支相冲（' + bZhi + '冲' + gZhi + '），夫妻宫先天有摩擦', kind: 'tension' });
+      mitigationTargets.push({ zhi: bZhi }, { zhi: gZhi });
+    } else if (ZHI_LIUHAI[bZhi] === gZhi) {
+      items.push({ label: '双方日支相害（' + bZhi + '害' + gZhi + '）', kind: 'tension' });
+      mitigationTargets.push({ zhi: bZhi }, { zhi: gZhi });
+    } else if (ZHI_XING_PAIRS.has(bZhi + gZhi)) {
+      items.push({ label: '双方日支相刑（' + bZhi + '刑' + gZhi + '）', kind: 'tension' });
+      mitigationTargets.push({ zhi: bZhi }, { zhi: gZhi });
+    } else if (ZHI_LIUHE[bZhi] === gZhi) {
+      items.push({ label: '双方日支六合（' + bZhi + '合' + gZhi + '），夫妻宫先天和谐', kind: 'harmony' });
+    } else if (ZHI_SANHE_GROUP[bZhi] === ZHI_SANHE_GROUP[gZhi] && bZhi !== gZhi) {
+      items.push({ label: '双方日支三合（' + bZhi + '合' + gZhi + '），夫妻宫先天和谐', kind: 'harmony' });
+    }
+    if (GAN_KE[bGan] === gGan) {
+      items.push({ label: '新娘日干克新郎日干（' + bGan + '克' + gGan + '）', kind: 'tension' });
+      mitigationTargets.push({ gan: bGan }, { gan: gGan });
+    } else if (GAN_KE[gGan] === bGan) {
+      items.push({ label: '新郎日干克新娘日干（' + gGan + '克' + bGan + '）', kind: 'tension' });
+      mitigationTargets.push({ gan: bGan }, { gan: gGan });
+    } else if (GAN_WUHE[bGan] === gGan) {
+      items.push({ label: '双方日干相合（' + bGan + '合' + gGan + '）', kind: 'harmony' });
+    }
+    return {
+      items: items,
+      hasTension: items.some(function (i) { return i.kind === 'tension'; }),
+      mitigationTargets: mitigationTargets
+    };
+  }
+
+  function scoreMitigation(dayGan, dayZhi, tension) {
+    var items = [];
+    var bonus = 0;
+    if (!tension || !tension.mitigationTargets.length) return { bonus: 0, items: items };
+    var zhiTargets = [], ganTargets = [];
+    tension.mitigationTargets.forEach(function (t) {
+      if (t.zhi && zhiTargets.indexOf(t.zhi) === -1) zhiTargets.push(t.zhi);
+      if (t.gan && ganTargets.indexOf(t.gan) === -1) ganTargets.push(t.gan);
+    });
+    var zhiBridges = [];
+    zhiTargets.forEach(function (z) {
+      if (ZHI_LIUHE[dayZhi] === z) zhiBridges.push(z + '(六合)');
+      else if (ZHI_SANHE_GROUP[dayZhi] === ZHI_SANHE_GROUP[z] && dayZhi !== z) zhiBridges.push(z + '(三合)');
+    });
+    if (zhiBridges.length >= 2) { bonus += 10; items.push({ label: '候选日支与双方先天摩擦点皆相合，主通关化解', delta: 10, kind: 'good', category: 'mitigation' }); }
+    else if (zhiBridges.length === 1) { bonus += 5; items.push({ label: '候选日支与一方相合（' + zhiBridges[0] + '），有助缓和先天摩擦', delta: 5, kind: 'good', category: 'mitigation' }); }
+    var ganBridges = ganTargets.filter(function (g) { return GAN_WUHE[dayGan] === g; });
+    if (ganBridges.length) { bonus += 5; items.push({ label: '候选日干与一方日干相合，有助缓和先天相克', delta: 5, kind: 'good', category: 'mitigation' }); }
+    return { bonus: bonus, items: items };
+  }
+
+  function scoreBaziLayer(lunar, brideBazi, groomBazi, tension) {
+    var dayGan = lunar.getDayGan ? lunar.getDayGan() : ganOf(lunar.getDayInGanZhi());
+    var dayZhi = lunar.getDayZhi ? lunar.getDayZhi() : zhiOf(lunar.getDayInGanZhi());
+    var bride = scorePersonBaziRelation(dayGan, dayZhi, brideBazi, '新娘');
+    var groom = scorePersonBaziRelation(dayGan, dayZhi, groomBazi, '新郎');
+    var mitigation = scoreMitigation(dayGan, dayZhi, tension);
+    var avg = (bride.subtotal + groom.subtotal) / 2 + mitigation.bonus;
+    var score = clip(17 + avg, 0, 35);
+    return {
+      score: score, max: 35,
+      items: bride.items.concat(groom.items).concat(mitigation.items),
+      brideSubtotal: bride.subtotal,
+      groomSubtotal: groom.subtotal,
+      mitigationBonus: mitigation.bonus
+    };
+  }
+
+  function clip(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function round1(v) { return Math.round(v * 10) / 10; }
+
+  function scoreDay(solar, brideBazi, groomBazi, settings, tension, noSpringSet) {
+    var lunar = solar.getLunar();
+    var excludeReasons = checkHardExclude(lunar, brideBazi, groomBazi, settings);
+    if (excludeReasons.length) return { excluded: true, excludeReasons: excludeReasons, solar: solar, lunar: lunar };
+
+    var almanac = scoreAlmanacLayer(solar, lunar, noSpringSet, settings);
+    var zodiac = scoreZodiacLayer(lunar, brideBazi, groomBazi, settings);
+    var bazi = scoreBaziLayer(lunar, brideBazi, groomBazi, tension);
+
+    var total = clip(Math.round(almanac.score + zodiac.score + bazi.score), 0, 100);
+    var dayGanZhi = lunar.getDayInGanZhi();
+    var weekday = WEEKDAY_CN[solar.toDate ? solar.toDate().getDay() : new Date(solar.toYmd().replace(/-/g, '/')).getDay()];
+
+    return {
+      excluded: false, solar: solar, lunar: lunar, ymd: solar.toYmd(),
+      weekday: weekday,
+      lunarStr: lunar.getYearInChinese() + '年' + lunar.getMonthInChinese() + '月' + lunar.getDayInChinese(),
+      dayGanZhi: dayGanZhi, total: total,
+      almanac: almanac, zodiac: zodiac, bazi: bazi,
+      yiList: (lunar.getDayYi ? lunar.getDayYi() : []) || [],
+      jiList: (lunar.getDayJi ? lunar.getDayJi() : []) || [],
+      isNoSpring: !!(noSpringSet && noSpringSet[lunar.getYear ? lunar.getYear() : 0])
+    };
+  }
+
+  function scanRange(startYmd, endYmd, brideBazi, groomBazi, settings) {
+    var results = [];
+    var excluded = [];
+    var tension = getCoupleTension(brideBazi, groomBazi);
+    var sp = startYmd.split('-').map(Number);
+    var ep = endYmd.split('-').map(Number);
+    var cur = Solar.fromYmd(sp[0], sp[1], sp[2]);
+    var end = Solar.fromYmd(ep[0], ep[1], ep[2]);
+
+    var startLunarYear = cur.getLunar().getYear();
+    var endLunarYear = end.getLunar().getYear();
+    var noSpringSet = {};
+    for (var ly = startLunarYear - 1; ly <= endLunarYear + 1; ly++) noSpringSet[ly] = isNoSpringLunarYear(ly);
+
+    var guard = 0;
+    while (cur.toYmd() <= end.toYmd() && guard < 5000) {
+      guard++;
+      var r = scoreDay(cur, brideBazi, groomBazi, settings, tension, noSpringSet);
+      if (r.excluded) excluded.push({ ymd: cur.toYmd(), excludeReasons: r.excludeReasons });
+      else results.push(r);
+      cur = cur.next(1);
+    }
+    results.sort(function (a, b) { return b.total - a.total; });
+
+    var yearContexts = getAllYearContexts(sp[0], ep[0], brideBazi, groomBazi, noSpringSet);
+    return {
+      results: results, excluded: excluded, excludedCount: excluded.length, totalScanned: guard,
+      tension: tension, noSpringSet: noSpringSet, yearContexts: yearContexts
+    };
+  }
+
+  function getHourRecommendations(ymd) {
+    var p = ymd.split('-').map(Number);
+    var out = [];
+    for (var idx = 0; idx < 12; idx++) {
+      var hour = idx === 0 ? 0 : idx * 2 - 1;
+      var lunar = Solar.fromYmdHms(p[0], p[1], p[2], hour, 0, 0).getLunar();
+      var luck = lunar.getTimeTianShenLuck ? lunar.getTimeTianShenLuck() : '';
+      var ji = (lunar.getTimeJi ? lunar.getTimeJi() : []) || [];
+      var jiHitWed = ji.some(function (s) { return WED_JI_KEYWORDS.indexOf(s) !== -1; });
+      out.push({
+        name: TIME_ZHI_NAME[idx],
+        ganzhi: lunar.getTimeInGanZhi(),
+        luck: luck,
+        recommend: luck === '吉' && !jiHitWed
+      });
+    }
+    return out;
+  }
+
+  var ZeJiEngine = {
+    getBaziFromBirth: getBaziFromBirth,
+    checkNoSpringYear: checkNoSpringYear,
+    isNoSpringLunarYear: isNoSpringLunarYear,
+    getYearLiuNian: getYearLiuNian,
+    getAllYearContexts: getAllYearContexts,
+    getCoupleTension: getCoupleTension,
+    scoreDay: scoreDay,
+    scanRange: scanRange,
+    getHourRecommendations: getHourRecommendations,
+    checkElderZodiacWarnings: checkElderZodiacWarnings,
+    getBaziDisplayPillars: getBaziDisplayPillars,
+    tenGod: tenGod
+  };
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = ZeJiEngine;
+  } else {
+    global.ZeJiEngine = ZeJiEngine;
+  }
+})(typeof window !== 'undefined' ? window : global);
+</script>
+
+<script>
+/* UI 交互层 (适配新引擎开关) */
+(function () {
+  'use strict';
+
+  var TIME_OPTIONS = [
+    ['0', '子时 (23:00-01:00)'], ['1', '丑时 (01:00-03:00)'], ['2', '寅时 (03:00-05:00)'],
+    ['3', '卯时 (05:00-07:00)'], ['4', '辰时 (07:00-09:00)'], ['5', '巳时 (09:00-11:00)'],
+    ['6', '午时 (11:00-13:00)'], ['7', '未时 (13:00-15:00)'], ['8', '申时 (15:00-17:00)'],
+    ['9', '酉时 (17:00-19:00)'], ['10', '戌时 (19:00-21:00)'], ['11', '亥时 (21:00-23:00)'],
+    ['-1', '时辰不详']
+  ];
+  var SX_OPTIONS = ['', '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+
+  var $ = function (sel) { return document.querySelector(sel); };
+  var $all = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  function todayYmd() { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function addDaysYmd(ymd, days) {
+    var p = ymd.split('-').map(Number);
+    var d = new Date(p[0], p[1] - 1, p[2]);
+    d.setDate(d.getDate() + days);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+  function ymdParts(ymd) { return ymd.split('-').map(Number); }
+  function daysBetween(a, b) {
+    var pa = ymdParts(a), pb = ymdParts(b);
+    return Math.round((new Date(pb[0], pb[1]-1, pb[2]) - new Date(pa[0], pa[1]-1, pa[2])) / 86400000);
+  }
+
+  function initSelects() {
+    ['#brideTime', '#groomTime'].forEach(function (sel) {
+      var el = $(sel);
+      TIME_OPTIONS.forEach(function (opt) { var o = document.createElement('option'); o.value = opt[0]; o.textContent = opt[1]; el.appendChild(o); });
+    });
+    $('#groomTime').value = '6'; $('#brideTime').value = '8';
+    $all('.elderSel').forEach(function (sel) {
+      SX_OPTIONS.forEach(function (sx) { var o = document.createElement('option'); o.value = sx; o.textContent = sx || '（不填）'; sel.appendChild(o); });
+    });
+    $('#rangeStart').value = todayYmd();
+    $('#rangeEnd').value = addDaysYmd(todayYmd(), 365);
+  }
+
+  var currentPreset = '12m';
+  function resolveRange() {
+    var t = todayYmd();
+    if (currentPreset === '3m') return [t, addDaysYmd(t, 90)];
+    if (currentPreset === '12m') return [t, addDaysYmd(t, 365)];
+    if (currentPreset === 'restYear') return [t, ymdParts(t)[0] + '-12-31'];
+    if (currentPreset === 'nextYear') { var ny = ymdParts(t)[0] + 1; return [ny + '-01-01', ny + '-12-31']; }
+    return [$('#rangeStart').value, $('#rangeEnd').value];
+  }
+
+  $('#presetGroup').addEventListener('click', function (e) {
+    var btn = e.target.closest('.preset-btn'); if (!btn) return;
+    $all('.preset-btn').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentPreset = btn.dataset.preset;
+    $('#customRange').classList.toggle('show', currentPreset === 'custom');
+  });
+
+  var state = {
+    results: [], excluded: [], excludedCount: 0, totalScanned: 0,
+    brideBazi: null, groomBazi: null, settings: {}, elders: [], tension: null,
+    viewMode: 'calendar', listShown: 12
+  };
+
+  function tierLabel(score) {
+    if (score >= 75) return '上吉';
+    if (score >= 60) return '吉';
+    if (score >= 45) return '中平';
+    if (score >= 30) return '次吉';
+    return '勉强可用';
+  }
+
+  $('#calcBtn').addEventListener('click', function () {
+    var bDate = $('#brideDate').value, gDate = $('#groomDate').value;
+    if (!bDate || !gDate) { alert('请填写双方出生日期'); return; }
+    var range = resolveRange();
+    if (!range[0] || !range[1]) { alert('请选择完整的择期范围'); return; }
+    if (range[1] < range[0]) { alert('结束日期需晚于起始日期'); return; }
+    if (daysBetween(range[0], range[1]) > 1100) {
+      if (!confirm('所选范围超过 3 年，计算可能较慢，是否继续？')) return;
+    }
+    var btn = $('#calcBtn');
+    btn.disabled = true; btn.textContent = '推算中…';
+    $('#loadingRow').style.display = 'flex';
+    $('#resultPanel').hidden = true; $('#contextPanel').hidden = true;
+
+    setTimeout(function () {
+      try {
+        runCalculation(bDate, gDate, range);
+      } catch (err) { alert('计算出错：' + err.message); console.error(err); }
+      finally { btn.disabled = false; btn.textContent = '开始排查吉日'; $('#loadingRow').style.display = 'none'; }
+    }, 30);
+  });
+
+  function runCalculation(bDate, gDate, range) {
+    var Engine = window.ZeJiEngine;
+    var brideTimeIdx = parseInt($('#brideTime').value, 10);
+    var groomTimeIdx = parseInt($('#groomTime').value, 10);
+    var brideBazi = Engine.getBaziFromBirth(bDate, brideTimeIdx);
+    var groomBazi = Engine.getBaziFromBirth(gDate, groomTimeIdx);
+
+    var settings = {
+      strictChong: $('#optStrictChong').checked,
+      strictTaboo: $('#optStrictTaboo').checked,
+      enableFolkTaboos: $('#optFolkTaboos').checked
+    };
+
+    var elders = $all('.elderSel').map(function (sel) { return { label: sel.dataset.label, sx: sel.value }; }).filter(function (x) { return x.sx; });
+    var scan = Engine.scanRange(range[0], range[1], brideBazi, groomBazi, settings);
+
+    state.results = scan.results; state.excluded = scan.excluded; state.excludedCount = scan.excludedCount;
+    state.totalScanned = scan.totalScanned; state.brideBazi = brideBazi; state.groomBazi = groomBazi;
+    state.settings = settings; state.elders = elders; state.range = range; state.listShown = 12; state.tension = scan.tension;
+
+    renderBirthAmbiguity(brideBazi, groomBazi);
+    renderContext(scan.yearContexts);
+    renderTension(scan.tension);
+    renderResultSummary();
+    renderCalendar(); renderList();
+    $('#contextPanel').hidden = false; $('#resultPanel').hidden = false;
+    $('#contextPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderBirthAmbiguity(brideBazi, groomBazi) {
+    var msgs = [];
+    if (brideBazi.yearAmbiguous) msgs.push('新娘出生日处于立春与正月初一之间，按命理惯例（立春换岁）年柱定为「' + brideBazi.year + '」「' + brideBazi.yearSX + '年」，与按农历正月初一计算的结果不同，请留意。');
+    if (groomBazi.yearAmbiguous) msgs.push('新郎出生日处于立春与正月初一之间，按命理惯例（立春换岁）年柱定为「' + groomBazi.year + '」「' + groomBazi.yearSX + '年」，与按农历正月初一计算的结果不同，请留意。');
+    var el = $('#birthAmbiguityNote');
+    if (!msgs.length) { el.style.display = 'none'; return; }
+    el.style.display = ''; el.innerHTML = msgs.map(function (m) { return '<div>⚠ ' + escapeHtml(m) + '</div>'; }).join('');
+  }
+
+  function renderContext(yearContexts) {
+    var grid = $('#contextGrid');
+    if (!yearContexts || !yearContexts.length) { grid.innerHTML = ''; return; }
+    grid.innerHTML = yearContexts.map(function (ctx) {
+      var chips = [];
+      chips.push(chip('流年干支', ctx.liuNian.ganzhi + '（' + ctx.liuNian.sx + '年）', false));
+      chips.push(chip('无春寡年', ctx.isNoSpring ? '是' : '否', ctx.isNoSpring));
+      chips.push(chip('新娘本命年', ctx.bride.benMing ? '是' : '否', ctx.bride.benMing));
+      chips.push(chip('新郎本命年', ctx.groom.benMing ? '是' : '否', ctx.groom.benMing));
+      chips.push(chip('新娘冲太岁', ctx.bride.chongTaiSui ? '是' : '否', ctx.bride.chongTaiSui));
+      chips.push(chip('新郎冲太岁', ctx.groom.chongTaiSui ? '是' : '否', ctx.groom.chongTaiSui));
+      chips.push(chip('新娘红鸾/天喜', (ctx.bride.hongLuan ? '红鸾入命 ' : '') + (ctx.bride.tianXi ? '天喜入命' : '') || '未入命', ctx.bride.hongLuan || ctx.bride.tianXi, true));
+      chips.push(chip('新郎红鸾/天喜', (ctx.groom.hongLuan ? '红鸾入命 ' : '') + (ctx.groom.tianXi ? '天喜入命' : '') || '未入命', ctx.groom.hongLuan || ctx.groom.tianXi, true));
+      chips.push(chip('女命大利月', ctx.bride.daLiMonths.map(function (m) { return '农历' + m + '月'; }).join('、'), false));
+      return '<div class="year-ctx-block"><div class="year-ctx-head">' + ctx.solarYear + ' 年' + (ctx.isNoSpring ? '　<span class="no-spring-badge">⚠ 无春年</span>' : '') + '</div><div class="context-grid">' + chips.join('') + '</div></div>';
+    }).join('');
+
+    var noSpringYears = yearContexts.filter(function (c) { return c.isNoSpring; }).map(function (c) { return c.noSpringLunarYearDisplay; });
+    var noSpringNote = noSpringYears.length ? '所选范围内，' + noSpringYears.join('、') + ' 全年不含“立春”节气。' : '所选范围内不含无春年。';
+    $('#contextNote').innerHTML = '本命年、冲太岁、红鸾天喜等仅作背景提示，不计入评分。' + noSpringNote + '　若范围跨多年，以上按年份分别列出。';
+  }
+
+  function chip(label, val, isFlag, isGoodFlag) {
+    var cls = 'ctx-chip' + (isFlag ? (isGoodFlag ? ' flag-good' : ' flag') : '');
+    return '<div class="' + cls + '"><div class="ctx-label">' + label + '</div><div class="ctx-val">' + escapeHtml(val || '—') + '</div></div>';
+  }
+
+  function renderTension(tension) {
+    var wrap = $('#tensionList');
+    if (!tension || !tension.items.length) {
+      wrap.innerHTML = '<div class="tension-empty">未检测到明显刑冲克害，命局层面较为平和。</div>'; return;
+    }
+    wrap.innerHTML = tension.items.map(function (it) {
+      return '<div class="tension-item ' + it.kind + '">' + (it.kind === 'tension' ? '⚠' : '✦') + ' ' + escapeHtml(it.label) + '</div>';
+    }).join('');
+  }
+
+  function renderResultSummary() {
+    $('#summaryLine').innerHTML = '共排查 <b>' + state.totalScanned + '</b> 天，硬性排除 <b>' + state.excludedCount + '</b> 天，余下 <b>' + state.results.length + '</b> 天纳入评分。';
+  }
+
+  $('#btnViewCalendar').addEventListener('click', function () { switchView('calendar'); });
+  $('#btnViewList').addEventListener('click', function () { switchView('list'); });
+  function switchView(mode) {
+    state.viewMode = mode;
+    $('#btnViewCalendar').classList.toggle('active', mode === 'calendar');
+    $('#btnViewList').classList.toggle('active', mode === 'list');
+    $('#calendarView').style.display = mode === 'calendar' ? '' : 'none';
+    $('#listView').style.display = mode === 'list' ? '' : 'none';
+    $('#loadMoreWrap').style.display = mode === 'list' && state.listShown < state.results.length ? '' : 'none';
+  }
+
+  function renderCalendar() {
+    var wrap = $('#calendarView');
+    if (!state.results.length && !state.excluded.length) { wrap.innerHTML = '<div class="empty-state">所选范围内没有可排查的日期。</div>'; return; }
+    var dayMap = {};
+    state.results.forEach(function (r) { dayMap[r.ymd] = { score: r.total, excluded: false }; });
+    state.excluded.forEach(function (r) { dayMap[r.ymd] = { score: null, excluded: true, reasons: r.excludeReasons }; });
+    var top1Ymd = state.results.length ? state.results[0].ymd : null;
+    var today = todayYmd();
+    var months = buildMonthList(state.range[0], state.range[1]);
+    var html = '';
+    months.forEach(function (m) { html += renderMonthBlock(m.year, m.month, dayMap, top1Ymd, today); });
+    wrap.innerHTML = html;
+  }
+
+  function buildMonthList(start, end) {
+    var sp = ymdParts(start), ep = ymdParts(end);
+    var list = []; var y = sp[0], m = sp[1];
+    while (y < ep[0] || (y === ep[0] && m <= ep[1])) { list.push({ year: y, month: m }); m++; if (m > 12) { m = 1; y++; } }
+    return list;
+  }
+
+  var MONTH_CN = ['', '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+
+  function renderMonthBlock(year, month, dayMap, top1Ymd, today) {
+    var firstDate = new Date(year, month - 1, 1);
+    var firstWeekday = firstDate.getDay();
+    var daysInMonth = new Date(year, month, 0).getDate();
+    var cells = [];
+    for (var i = 0; i < firstWeekday; i++) cells.push('<div class="day-cell pad"></div>');
+    var countIncluded = 0;
+    for (var d = 1; d <= daysInMonth; d++) {
+      var ymd = year + '-' + pad2(month) + '-' + pad2(d);
+      if (ymd < state.range[0] || ymd > state.range[1]) { cells.push('<div class="day-cell pad"></div>'); continue; }
+      var info = dayMap[ymd];
+      var cls = 'day-cell', inner = '';
+      if (!info) { cls += ' unknown'; inner = '<span>' + d + '</span>'; }
+      else if (info.excluded) {
+        cls += ' excluded';
+        inner = '<span>' + d + '</span><span class="dscore">忌</span>';
+        var reasonsStr = (info.reasons || []).join('；');
+        cells.push('<div class="' + cls + '" title="' + escapeHtml(reasonsStr) + '">' + inner + '</div>');
+        continue;
+      } else {
+        cls += ' included'; countIncluded++;
+        var alpha = Math.max(.08, Math.min(.92, info.score / 100));
+        var useLight = info.score >= 55;
+        inner = '<span style="' + (useLight ? 'color:#fdf6e8' : '') + '">' + d + '</span><span class="dscore" style="' + (useLight ? 'color:#fdf6e8' : '') + '">' + info.score + '</span>';
+        if (ymd === top1Ymd) cls += ' top1';
+        cells.push('<div class="' + cls + '" data-ymd="' + ymd + '" tabindex="0" style="background:rgba(162,59,46,' + alpha + ')">' + inner + '</div>');
+        continue;
+      }
+      if (ymd === today) cls += ' today';
+      cells.push('<div class="' + cls + '">' + inner + '</div>');
+    }
+    return '<div class="month-block"><div class="month-title"><span>' + year + ' 年 ' + MONTH_CN[month] + '</span><span class="m-count">' + countIncluded + ' 天入选</span></div><div class="week-row"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="day-grid">' + cells.join('') + '</div></div>';
+  }
+
+  $('#calendarView').addEventListener('click', function (e) {
+    var cell = e.target.closest('.day-cell[data-ymd]'); if (!cell) return; openDrawerForYmd(cell.dataset.ymd);
+  });
+
+  function renderList() {
+    var wrap = $('#listView');
+    if (!state.results.length) { wrap.innerHTML = '<div class="empty-state">没有找到符合条件的吉日。</div>'; $('#loadMoreWrap').style.display = 'none'; return; }
+    var shown = state.results.slice(0, state.listShown);
+    wrap.innerHTML = shown.map(function (r, idx) { return renderListCard(r, idx); }).join('');
+    $('#loadMoreWrap').style.display = state.listShown < state.results.length ? '' : 'none';
+  }
+
+  function renderListCard(r, idx) {
+    var allTags = r.almanac.items.concat(r.zodiac.items).concat(r.bazi.items);
+    var topTags = allTags.filter(function (t) { return t.kind === 'good'; }).slice(0, 3)
+      .concat(allTags.filter(function (t) { return t.kind === 'warn'; }).slice(0, 2));
+    var tagsHtml = topTags.map(function (t) { return '<span class="tag ' + t.kind + '">' + (t.kind==='good'?'✦ ':'⚠ ') + escapeHtml(t.label) + '</span>'; }).join('');
+    return '<div class="date-card' + (idx===0?' rank1':'') + '" data-ymd="' + r.ymd + '">' +
+      '<span class="rank-num">' + (idx+1) + '</span>' +
+      '<div class="dc-main"><span class="dc-date">' + r.ymd + ' 周' + r.weekday + '</span><span class="dc-lunar">' + r.lunarStr + ' · 日柱 ' + r.dayGanZhi + '</span></div>' +
+      '<div class="dc-score-wrap"><span class="dc-score">' + r.total + '</span><span class="dc-tier">' + tierLabel(r.total) + '</span></div>' +
+      '<div class="dc-tags">' + tagsHtml + '</div>' +
+      '<div class="dc-detail-btn"><button class="btn-ghost detail-trigger" data-ymd="' + r.ymd + '">查看完整明细 → </button></div></div>';
+  }
+
+  $('#listView').addEventListener('click', function (e) { var btn = e.target.closest('.detail-trigger'); if (btn) openDrawerForYmd(btn.dataset.ymd); });
+  $('#loadMoreBtn').addEventListener('click', function () { state.listShown += 20; renderList(); });
+
+  var overlay = $('#drawerOverlay'), drawer = $('#drawer');
+  function closeDrawer() { drawer.classList.remove('show'); overlay.classList.remove('show'); }
+  overlay.addEventListener('click', closeDrawer);
+
+  function openDrawerForYmd(ymd) {
+    var record = state.results.find(function (r) { return r.ymd === ymd; });
+    var excludedInfo = !record ? state.excluded.find(function (r) { return r.ymd === ymd; }) : null;
+    drawer.innerHTML = record ? buildDrawerContent(record) : buildExcludedDrawerContent(ymd, excludedInfo);
+    drawer.classList.add('show'); overlay.classList.add('show');
+    drawer.querySelector('.drawer-close').addEventListener('click', closeDrawer);
+    if (record) bindDrawerInteractions(record);
+  }
+
+  function buildExcludedDrawerContent(ymd, info) {
+    var reasons = info ? info.excludeReasons : ['未在排查范围内'];
+    return '<button class="drawer-close" aria-label="关闭">×</button><div class="drawer-head"><div class="drawer-date">' + ymd + '</div><div class="drawer-lunar">此日已被硬性规则排除</div></div><div class="drawer-sec"><div class="drawer-sec-title">排除原因</div>' + reasons.map(function (r) { return '<div class="yiji-row">⚠ ' + escapeHtml(r) + '</div>'; }).join('') + '</div>';
+  }
+
+  function buildDrawerContent(r) {
+    var sealHtml = state.results[0] && state.results[0].ymd === r.ymd ? buildSealSvg() : '';
+    var html = '<button class="drawer-close" aria-label="关闭">×</button>' + sealHtml;
+    html += '<div class="drawer-head"><div class="drawer-date">' + r.ymd + ' 周' + r.weekday + '</div><div class="drawer-lunar">' + r.lunarStr + ' · 日柱 ' + r.dayGanZhi + '</div><div class="drawer-score-row"><span class="drawer-score">' + r.total + '</span><span class="drawer-tier">分 · ' + tierLabel(r.total) + '</span></div></div>';
+    html += '<div class="layer-bars">' + layerBar('通书层', r.almanac.score, r.almanac.max) + layerBar('生肖层', r.zodiac.score, r.zodiac.max) + layerBar('八字层', r.bazi.score, r.bazi.max) + '</div>';
+    html += '<div class="interp-text">' + escapeHtml(buildInterpretation(r)) + '</div>';
+    html += sectionItems('通书依据', r.almanac.items);
+    html += sectionItems('生肖太岁', r.zodiac.items);
+    var mit = r.bazi.items.filter(function (i) { return i.category === 'mitigation'; });
+    var pers = r.bazi.items.filter(function (i) { return i.category !== 'mitigation'; });
+    if (mit.length) html += sectionItems('命局化解', mit);
+    html += sectionItems('八字呼应', pers);
+    html += '<div class="drawer-sec"><div class="drawer-sec-title">当日宜忌</div><div class="yiji-row"><b>宜：</b>' + (r.yiList.join('、') || '—') + '</div><div class="yiji-row"><b>忌：</b>' + (r.jiList.join('、') || '—') + '</div></div>';
+    if (state.elders.length) {
+      var warns = window.ZeJiEngine.checkElderZodiacWarnings(r.lunar, state.elders);
+      if (warns.length) html += '<div class="drawer-sec"><div class="drawer-sec-title">长辈生肖提示</div>' + warns.map(function (w) { return '<div class="elder-warn">⚠ ' + escapeHtml(w) + '</div>'; }).join('') + '</div>';
+    }
+    html += '<div class="drawer-sec"><div class="drawer-sec-title">当日吉时</div><div class="hour-btn-wrap"><button class="btn-ghost" id="hourCalcBtn">推算十二时辰</button></div><div id="hourGridWrap"></div></div>';
+    return html;
+  }
+
+  function layerBar(label, score, max) {
+    var pct = Math.round(score / max * 100);
+    return '<div class="layer-bar-row"><span class="layer-bar-label">' + label + '</span><span class="layer-bar-track"><span class="layer-bar-fill" style="width:' + pct + '%"></span></span><span class="layer-bar-val">' + score + ' / ' + max + '</span></div>';
+  }
+
+  function sectionItems(title, items) {
+    if (!items.length) return '';
+    var html = '<div class="drawer-sec"><div class="drawer-sec-title">' + title + '</div>';
+    items.forEach(function (it) {
+      var icon = it.kind === 'good' ? '✦' : (it.kind === 'warn' ? '⚠' : '・');
+      var sign = it.delta > 0 ? '+' + it.delta : (it.delta < 0 ? '' + it.delta : '');
+      html += '<div class="yiji-row" style="display:flex;justify-content:space-between;gap:.6rem;"><span>' + icon + ' ' + escapeHtml(it.label) + '</span><span style="font-family:var(--mono);color:' + (it.delta > 0 ? 'var(--vermillion)' : (it.delta < 0 ? 'var(--warn)' : 'var(--ink-faint)')) + ';flex-shrink:0;">' + sign + '</span></div>';
+    });
+    return html + '</div>';
+  }
+
+  function bindDrawerInteractions(r) {
+    var btn = $('#hourCalcBtn'); if (!btn) return;
+    btn.addEventListener('click', function () {
+      var hours = window.ZeJiEngine.getHourRecommendations(r.ymd);
+      var html = '<div class="hour-grid">' + hours.map(function (h) { return '<div class="hour-cell' + (h.recommend ? ' rec' : '') + '" title="' + h.ganzhi + ' ' + h.luck + '">' + h.name.slice(0,2) + '<br>' + h.ganzhi + '</div>'; }).join('') + '</div><p style="font-size:.72rem;color:var(--ink-faint);margin-top:.5rem;">高亮为黄道吉时且未忌嫁娶，仅供参考。</p>';
+      $('#hourGridWrap').innerHTML = html; btn.style.display = 'none';
+    });
+  }
+
+  function buildSealSvg() {
+    return '<svg class="seal" viewBox="0 0 46 46"><rect x="3" y="3" width="40" height="40" rx="2" fill="none" stroke="#a23b2e" stroke-width="2.4" opacity="0.92" transform="rotate(-3 23 23)"/><text x="23" y="30" text-anchor="middle" font-family="\'Noto Serif SC\'" font-weight="900" font-size="20" fill="#a23b2e" transform="rotate(-3 23 23)">吉</text></svg>';
+  }
+
+  function buildInterpretation(r) {
+    var t = r.total;
+    var goodA = r.almanac.items.filter(function (i) { return i.kind === 'good'; }).map(function (i) { return i.label; });
+    var warnA = r.almanac.items.filter(function (i) { return i.kind === 'warn'; }).map(function (i) { return i.label; });
+    var goodB = r.bazi.items.filter(function (i) { return i.kind === 'good'; }).map(function (i) { return i.label; });
+    var warnB = r.bazi.items.filter(function (i) { return i.kind === 'warn' && i.delta <= -4; }).map(function (i) { return i.label; });
+    var text = '';
+    if (t >= 75) text += '此日（' + r.dayGanZhi + '）通书、生肖、八字三层均较为顺遂，是范围内的优选之一。';
+    else if (t >= 60) text += '整体偏吉，部分细节仍有瑕疵，属于可用之选。';
+    else if (t >= 45) text += '吉凶参半，若执意选用，建议配合吉时趋避。';
+    else text += '扣分项偏多，仅在范围内日期普遍紧张时才建议考虑。';
+    if (goodA.length) text += '通书层面，' + goodA.slice(0,2).join('、') + '。';
+    if (warnA.length) text += '需留意' + warnA.slice(0,2).join('、') + '。';
+    if (goodB.length) text += '八字比对上，' + goodB.slice(0,2).join('；') + '，主缘分和顺。';
+    if (warnB.length) text += '但也存在' + warnB.slice(0,1).join('') + '，建议结合双方实际情况权衡。';
+    return text;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
+
+  initSelects();
+})();
+</script>
+</body>
+</html>
